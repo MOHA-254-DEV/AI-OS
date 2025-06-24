@@ -6,3 +6,15 @@ packages = ["cargo", "ffmpeg-full", "libiconv", "libxcrypt", "openssl", "pkg-con
 
 [deployment]
 run = ["sh", "-c", "python main.py"]
+
+[workflows]
+runButton = "Run Application"
+
+[[workflows.workflow]]
+name = "Run Application"
+author = 44198526
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python main.py"

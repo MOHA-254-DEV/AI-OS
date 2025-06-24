@@ -1,8 +1,8 @@
 fastapi
 uvicorn
 SpeechRecognition
-pyaudio
 pyppeteer
 beautifulsoup4
 cryptography
-openai-whisper==20231117
+requests
+aiofiles

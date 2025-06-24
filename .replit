@@ -8,7 +8,6 @@ packages = ["cargo", "ffmpeg-full", "libiconv", "libxcrypt", "openssl", "pkg-con
 run = ["sh", "-c", "python main.py"]
 
 [workflows]
-runButton = "Run Application"
 
 [[workflows.workflow]]
 name = "Run Application"

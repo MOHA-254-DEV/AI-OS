@@ -5,7 +5,7 @@ import time
 
 # Configure logging
 logging.basicConfig(
-    filename='process_log.txt',
+    filename='logs/process_log.txt',
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )

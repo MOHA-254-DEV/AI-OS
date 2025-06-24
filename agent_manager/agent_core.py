@@ -3,6 +3,23 @@
 import logging
 from typing import Dict, Any
 
+logger = logging.getLogger(__name__)
+
+class AgentCore:
+    def __init__(self):
+        self.agents = {}
+        self.status = "initialized"
+        logger.info("AgentCore initialized")
+        
+    def register_agent(self, agent_id: str, agent_config: Dict[str, Any]):
+        """Register a new agent"""
+        self.agents[agent_id] = agent_config
+        logger.info(f"Agent {agent_id} registered")
+        
+    def get_agent_status(self, agent_id: str):
+        """Get status of specific agent"""
+        return self.agents.get(agent_id, {}).get("status", "unknown")
+
 
 class Agent:
     def __init__(self, name: str, plugin: Any):

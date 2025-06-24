@@ -11,12 +11,13 @@ logging.basicConfig(level=logging.INFO)
 
 class DecisionEngine:
     def __init__(self):
+        self.goals = []
+        self.strategies = {}
         self.registry = PluginRegistry()
+        logger.info("DecisionEngine initialized")
 
     def analyze_goal(self, goal):
-        """
-        Analyze a goal and return a list of AITasks to execute.
-        """
+        """Analyze a goal and determine the best strategy"""
         if not goal:
             logger.warning("[DECISION ENGINE] No goal provided to analyze.")
             return []

@@ -1,8 +1,7 @@
-# ai_writer.py
-
 import os
 import openai
 import logging
+import traceback
 
 class AIWriter:
     def __init__(self, model="gpt-4", temperature=0.7, use_mock=False, api_key=None):
@@ -81,3 +80,17 @@ class AIWriter:
             self.logger.exception("[AIWriter] Unexpected exception:")
             return f"[Error] Unexpected failure: {str(e)}"
 
+    def generate_content(self, prompt, content_type="article"):
+        """Generate content based on prompt"""
+        try:
+            # Basic content generation logic
+            if content_type == "article":
+                return f"Generated article based on: {prompt}"
+            elif content_type == "email":
+                return f"Generated email based on: {prompt}"
+            else:
+                return f"Generated content based on: {prompt}"
+
+        except Exception as e:
+            self.logger.exception("[AIWriter] Unexpected exception:")
+            return f"[Error] Unexpected failure: {str(e)}"

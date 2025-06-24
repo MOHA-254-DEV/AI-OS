@@ -1,7 +1,27 @@
 import speech_recognition as sr
-from core.router import TaskRouter
 import threading
 import time
+import logging
+
+logger = logging.getLogger(__name__)
+
+class VoiceInput:
+    def __init__(self):
+        self.recognizer = sr.Recognizer()
+        self.microphone = sr.Microphone()
+        
+    def listen_for_command(self):
+        """Listen for voice commands"""
+        try:
+            with self.microphone as source:
+                logger.info("Listening for voice command...")
+                audio = self.recognizer.listen(source, timeout=5)
+                command = self.recognizer.recognize_google(audio)
+                logger.info(f"Voice command received: {command}")
+                return command
+        except Exception as e:
+            logger.error(f"Voice input error: {e}")
+            return None
 
 class VoiceInputEngine:
     def __init__(self):

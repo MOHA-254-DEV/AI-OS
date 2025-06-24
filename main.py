@@ -5,10 +5,10 @@ async def main():
     scheduler = TaskScheduler()
     await scheduler.initialize()
 
-    result = await scheduler.run_task(\"echo\", \"hello world\")
+    result = await scheduler.run_task("echo", "hello world")
     print(result)
 
-    plugin_result = await scheduler.run_task(\"custom_echo\", \"plugin test\")
+    plugin_result = await scheduler.run_task("custom_echo", "plugin test")
     print(plugin_result)
 
 if __name__ == '__main__':

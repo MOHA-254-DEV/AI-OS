@@ -1,6 +1,6 @@
 fastapi
 uvicorn
-speechrecognition
+SpeechRecognition
 pyaudio
 pyppeteer
 beautifulsoup4

@@ -88,8 +88,8 @@ class AIOperatingSystem:
             self.scheduler.start()
             
             # Get port from environment (multi-platform compatible)
-            port = int(os.getenv('PORT', 8000))
-            host = os.getenv('HOST', '0.0.0.0')
+            port = int(os.getenv('PORT', 5000))
+            host = "0.0.0.0"
             
             logger.info(f"🌐 Starting web interface on {host}:{port}")
             
@@ -97,7 +97,7 @@ class AIOperatingSystem:
             self.web_app.run(
                 host=host,
                 port=port,
-                debug=os.getenv('FLASK_ENV') == 'development',
+                debug=os.getenv('DEBUG', 'false').lower() == 'true',
                 threaded=True
             )
             

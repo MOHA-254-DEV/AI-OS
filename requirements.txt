@@ -8,7 +8,7 @@ gunicorn==21.2.0
 
 # AI and ML
 transformers==4.35.2
-torch==2.1.1
+torch>=2.2.0
 numpy==1.24.3
 scikit-learn==1.3.2
 
@@ -24,8 +24,10 @@ aiohttp==3.9.0
 
 # Task Queue and Async
 celery==5.3.4
-asyncio==3.4.3
-threading
+
+# Voice Recognition (missing)
+speechrecognition==3.10.0
+pyaudio==0.2.11
 
 # Configuration and Environment
 python-dotenv==1.0.0

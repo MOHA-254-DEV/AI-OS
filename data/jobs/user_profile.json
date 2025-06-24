@@ -1,0 +1,6 @@
+{
+    "name": "John Doe",
+    "email": "johndoe@example.com",
+    "skills": ["Python", "Web Development", "Data Entry", "Finance"],
+    "template": "Hello! I saw your listing for '{job_title}' in the {skill} category. I have extensive experience in this area and would love to work with you. Let's connect!"
+}

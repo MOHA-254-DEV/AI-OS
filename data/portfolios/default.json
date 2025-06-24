@@ -1,0 +1,24 @@
+{
+    "cash": 10000.0,
+    "assets": {
+      "AAPL": 5,
+      "BTC": 0.02
+    },
+    "history": [
+      {
+        "type": "buy",
+        "asset": "AAPL",
+        "qty": 5,
+        "price": 150.0,
+        "time": "2025-05-05T10:00:00Z"
+      },
+      {
+        "type": "buy",
+        "asset": "BTC",
+        "qty": 0.02,
+        "price": 25000.0,
+        "time": "2025-05-05T10:10:00Z"
+      }
+    ]
+  }
+  

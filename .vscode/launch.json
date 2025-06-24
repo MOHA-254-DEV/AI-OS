@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch via NPM",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "debug"],
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Launch Node App",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/app.js",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Mainframe Debugger (InterTest Batch)",
+      "type": "intertest-batch",
+      "request": "launch",
+      "programName": ["MY_MAINFRAME_PROGRAM"],
+      "protsym": ["MY_PROTSYM"],
+      "host": "192.168.1.100",
+      "port": 6500,
+      "interTestUserName": "myUser",
+      "interTestSecure": true,
+      "convertedJCL": "MY.JCL.MEMBER"
+    }
+  ]
+}

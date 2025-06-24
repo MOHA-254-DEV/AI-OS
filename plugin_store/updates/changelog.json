@@ -1,0 +1,11 @@
+{
+    "plugin_analytics_ai": {
+      "1.0.0": "Initial release",
+      "1.1.0": "Added support for real-time charts",
+      "1.2.0": "Fixed critical security vulnerability"
+    },
+    "plugin_graphic_designer": {
+      "2.0.0": "Major UI redesign and faster rendering engine"
+    }
+  }
+  

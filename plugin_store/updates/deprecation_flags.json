@@ -1,0 +1,54 @@
+{
+    "plugin_old_social_bot": {
+      "deprecated": true,
+      "reason": "Replaced by plugin_social_ai_v2",
+      "alternative": "plugin_social_ai_v2"
+    }
+  }
+  def launch_plugin(plugin_id):
+  from plugin_store.updates.version_manager import VersionManager
+  from plugin_store.updates.updater_engine import PluginUpdater
+  import json
+
+  updater = PluginUpdater()
+  with open("plugin_store/updates/deprecation_flags.json") as f:
+      deprecated_plugins = json.load(f)
+
+  if plugin_id in deprecated_plugins and deprecated_plugins[plugin_id]["deprecated"]:
+      alt = deprecated_plugins[plugin_id].get("alternative", "N/A")
+      print(f"⚠️ Plugin '{plugin_id}' is deprecated. Consider switching to: {alt}")
+      return
+
+  updates = updater.check_updates()
+  for plugin, current, latest in updates:
+      if plugin == plugin_id:
+          print(f"🔔 Update available for {plugin_id}: {current} ➜ {latest}")
+          updater.apply_update(plugin, f'updates_repo/{plugin}/{latest}')
+
+  print(f"🚀 Launching plugin: {plugin_id}")
+  def push_plugin_update(plugin_id, new_version, description, update_path):
+  import json
+  reg_file = 'plugin_registry.json'
+  changelog_file = 'plugin_store/updates/changelog.json'
+
+  with open(reg_file, 'r') as f:
+      registry = json.load(f)
+
+  if plugin_id not in registry:
+      print("❌ Plugin not registered.")
+      return
+
+  registry[plugin_id]['latest_version'] = new_version
+
+  with open(reg_file, 'w') as f:
+      json.dump(registry, f, indent=2)
+
+  with open(changelog_file, 'r') as f:
+      changelog = json.load(f)
+
+  changelog.setdefault(plugin_id, {})[new_version] = description
+
+  with open(changelog_file, 'w') as f:
+      json.dump(changelog, f, indent=2)
+
+  print(f"✅ Pushed update for {plugin_id} ➜ v{new_version}")

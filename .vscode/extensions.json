@@ -1,0 +1,13 @@
+{
+    "recommendations": [
+        "ms-python.python",
+        "ms-vscode.vscode-typescript-next",
+        "redhat.java",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "docker.docker",
+        "firebase.firebase-tools",
+        "bito.bito",
+        "continue.continue"
+    ]
+}

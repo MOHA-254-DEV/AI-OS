@@ -1,0 +1,6 @@
+{
+    "short_term_ttl": 3600,
+    "long_term_storage": "long_term_mem.json",
+    "max_token_length": 1000
+  }
+  

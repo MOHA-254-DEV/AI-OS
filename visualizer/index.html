@@ -1,0 +1,18 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Agent Heatmap Live</title>
+</head>
+<body>
+  <h1>Live Multi-Agent Heatmap</h1>
+  <pre id="snapshotDisplay"></pre>
+  <script>
+    const ws = new WebSocket("ws://localhost:8000/ws/heatmap");
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      document.getElementById("snapshotDisplay").textContent = JSON.stringify(data, null, 2);
+    };
+  </script>
+</body>
+</html>

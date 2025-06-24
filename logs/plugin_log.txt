@@ -1,0 +1,13 @@
+--- Plugin Execution Log [2025-05-05T18:27:41.118Z] ---
+ID       : 7f8e2010-3c70-49c2-aea1-63c9439c5d2f
+Plugin   : test_plugin
+Success  : True
+Input    : def run(): ...
+Output   : ✅ Hello from plugin!
+Error    : 
+Metadata : {
+  "executor": "sandbox",
+  "cpu_limit": 2,
+  "mem_limit_mb": 128
+}
+------------------------------------------------------

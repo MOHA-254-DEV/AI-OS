@@ -1,0 +1,40 @@
+{
+    "plugins": [
+      {
+        "id": "com.aios.plugin.pdfexport",
+        "name": "PDF Exporter",
+        "author": "devX",
+        "version": "1.0.0",
+        "description": "Exports data into PDF format.",
+        "price": 0,
+        "rating": 4.8,
+        "trust_score": 91.2,
+        "approved": true,
+        "filepath": "plugins/pdf_exporter.py"
+      }
+    ]
+  }
+  "license": {
+    "type": "trial",
+    "max_uses": 10,
+    "price": 9.99
+  }
+  def install_plugin_with_license(user_email, plugin_id, license_key):
+  from plugin_store.licensing.license_manager import LicenseManager
+  from plugin_store.licensing.usage_tracker import UsageTracker
+
+  license_mgr = LicenseManager()
+  tracker = UsageTracker()
+
+  valid, info = license_mgr.validate_license_key(license_key)
+  if not valid or info["plugin_id"] != plugin_id:
+      print("❌ Invalid or mismatched license key.")
+      return False
+
+  if not tracker.enforce_limit(user_email, plugin_id, max_uses=10):
+      print("❌ Usage limit reached. Please upgrade your license.")
+      return False
+
+  tracker.log_usage(user_email, plugin_id)
+  print("✅ Plugin usage logged. Plugin installed successfully.")
+  return True

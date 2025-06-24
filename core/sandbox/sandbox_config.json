@@ -1,0 +1,8 @@
+{
+    "max_cpu_seconds": 2,
+    "max_memory_mb": 128,
+    "max_runtime": 5,
+    "use_docker": false,
+    "docker_image": "python:3.11-slim"
+  }
+  

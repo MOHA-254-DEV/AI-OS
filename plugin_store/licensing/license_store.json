@@ -1,0 +1,14 @@
+{
+    "plugin_trader": {
+      "key": "hashed_license",
+      "plan": "business",
+      "usage": {
+        "user123": {
+          "count": 3,
+          "last_reset": 1714789239.0
+        }
+      },
+      "expires_at": 1722494400.0
+    }
+  }
+  

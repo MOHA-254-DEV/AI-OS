@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+speechrecognition
+pyaudio
+pyppeteer
+beautifulsoup4
+cryptography
+openai-whisper==20231117

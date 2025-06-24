@@ -1,0 +1,115 @@
+import time
+import logging
+from threading import Lock
+from typing import Dict, Any, List
+
+from core.logging.plugin_logger import PluginLogger
+from core.event_bus import event_bus, EventType
+
+class FaultDetector:
+    """
+    Monitors incoming agent metrics and detects resource faults.
+    """
+
+    CPU_THRESHOLD = 90.0       # % CPU
+    MEMORY_THRESHOLD = 100.0   # MB
+
+    def __init__(self):
+        self.logger = PluginLogger()
+        self.fault_log: List[Dict[str, Any]] = []
+        self.lock = Lock()
+        self.metrics_queue: List[Dict[str, Any]] = []
+        self.logger_ref = logging.getLogger(__name__)
+
+    def submit_metric(self, agent_id: str, cpu: float, memory: float) -> None:
+        """
+        External API for pushing new agent metrics into the detector.
+
+        Args:
+            agent_id (str): The agent identifier.
+            cpu (float): CPU usage percentage.
+            memory (float): Memory usage in MB.
+        """
+        with self.lock:
+            self.metrics_queue.append({
+                "timestamp": time.time(),
+                "agent_id": agent_id,
+                "cpu": cpu,
+                "memory": memory
+            })
+
+    def listen_for_faults(self, poll_interval: int = 5) -> None:
+        """
+        Continuously checks the metric queue for resource faults.
+
+        Args:
+            poll_interval (int): Seconds to wait between each scan.
+        """
+        self.logger_ref.info("FaultDetector started listening for faults.")
+        while True:
+            try:
+                with self.lock:
+                    pending = self.metrics_queue[:]
+                    self.metrics_queue.clear()
+
+                for metric in pending:
+                    self._detect_fault(metric)
+
+            except Exception as e:
+                self.logger_ref.exception(f"FaultDetector error: {e}")
+
+            time.sleep(poll_interval)
+
+    def _detect_fault(self, metric: Dict[str, Any]) -> None:
+        """
+        Analyzes a single metric dictionary and logs faults if any are found.
+
+        Args:
+            metric (Dict[str, Any]): Metric data containing agent_id, cpu, memory, etc.
+        """
+        agent_id = metric["agent_id"]
+        cpu = metric["cpu"]
+        memory = metric["memory"]
+        fault_type = None
+
+        if cpu > self.CPU_THRESHOLD:
+            fault_type = "CPUOverload"
+        elif memory > self.MEMORY_THRESHOLD:
+            fault_type = "MemoryLeak"
+
+        if fault_type:
+            fault = {
+                "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                "agent_id": agent_id,
+                "fault_type": fault_type,
+                "metadata": {
+                    "cpu": round(cpu, 2),
+                    "memory": round(memory, 2)
+                }
+            }
+
+            with self.lock:
+                self.fault_log.append(fault)
+
+            self.logger.log(
+                plugin_name="FaultDetector",
+                input_code=f"Metric: {metric}",
+                output=f"Detected {fault_type}",
+                error="",
+                success=False,
+                metadata=fault
+            )
+
+            # Optional: Emit fault event to event bus
+            event_bus.publish(EventType.TASK_FAILED, {
+                "task_id": f"{agent_id}-fault",
+                "reason": fault_type,
+                "agent_id": agent_id
+            })
+
+    def get_fault_history(self) -> List[Dict[str, Any]]:
+        """
+        Returns a list of recorded faults.
+        """
+        with self.lock:
+            return list(self.fault_log)

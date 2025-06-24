@@ -1,0 +1,49 @@
+<!-- profile_builder/profile_template.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ name }} | Professional Profile</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    h1 { color: #333; }
+    section { margin-bottom: 20px; }
+    .title { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>{{ name }}</h1>
+  <p><strong>Email:</strong> {{ email }}</p>
+  <p><strong>Phone:</strong> {{ phone }}</p>
+
+  <section>
+    <h2>Summary</h2>
+    <p>{{ summary }}</p>
+  </section>
+
+  <section>
+    <h2>Skills</h2>
+    <ul>
+      {% for skill in skills %}
+      <li>{{ skill }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section>
+    <h2>Experience</h2>
+    {% for exp in experience %}
+    <div>
+      <div class="title">{{ exp.title }} at {{ exp.company }}</div>
+      <div>{{ exp.duration }}</div>
+      <p>{{ exp.description }}</p>
+    </div>
+    {% endfor %}
+  </section>
+
+  <section>
+    <h2>Education</h2>
+    <p>{{ education }}</p>
+  </section>
+</body>
+</html>

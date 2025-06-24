@@ -1,0 +1,9 @@
+{
+    "CodeGPT.apiKey": "sk-...your-real-api-key...",
+    "files.readonlyInclude": {
+      "**/.c4z/.extsrcs/*.PROTSYM.cbl": true,
+      "**/.c4z/.extsrcs/*.PROTSYM.listing": true
+    },
+    "bitoAI.codeCompletion.enableAutoCompletion": false
+  }
+  

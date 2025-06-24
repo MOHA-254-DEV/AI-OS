@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agent Performance Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+      color: #222;
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    .chart-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .chart-box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      width: 45%;
+      min-width: 300px;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    h3 {
+      text-align: center;
+      color: #34495e;
+    }
+
+    .error-message {
+      text-align: center;
+      color: #e74c3c;
+      margin-top: 20px;
+      font-size: 16px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h2>Agent Performance Overview</h2>
+
+  <div class="chart-container">
+    <div class="chart-box">
+      <h3>Task Completion Trend</h3>
+      <canvas id="taskTrend"></canvas>
+    </div>
+    <div class="chart-box">
+      <h3>Agent Success Rate</h3>
+      <canvas id="agentSuccess"></canvas>
+    </div>
+  </div>
+
+  <div class="error-message" id="errorMessage">
+    There was an error loading the dashboard metrics. Please try again later.
+  </div>
+
+  <script>
+    async function loadData() {
+      const errorBox = document.getElementById("errorMessage");
+      try {
+        const response = await fetch("/api/metrics");
+
+        if (!response.ok) {
+          throw new Error(`Failed to load data: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const trend = data.task_completion_trend || {};
+        const successRate = data.agent_success_rate || {};
+
+        // Remove existing charts if re-rendering
+        if (window.taskChart) window.taskChart.destroy();
+        if (window.successChart) window.successChart.destroy();
+
+        // Line Chart: Task Completion Trend
+        window.taskChart = new Chart(document.getElementById('taskTrend'), {
+          type: 'line',
+          data: {
+            labels: Object.keys(trend),
+            datasets: [{
+              label: 'Tasks Completed',
+              data: Object.values(trend),
+              borderColor: '#2980b9',
+              backgroundColor: 'rgba(41, 128, 185, 0.1)',
+              fill: true,
+              tension: 0.3,
+              pointRadius: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' },
+              tooltip: { mode: 'index', intersect: false }
+            },
+            scales: {
+              x: { title: { display: true, text: 'Time' } },
+              y: {
+                title: { display: true, text: 'Tasks Completed' },
+                beginAtZero: true
+              }
+            }
+          }
+        });
+
+        // Bar Chart: Agent Success Rate
+        window.successChart = new Chart(document.getElementById('agentSuccess'), {
+          type: 'bar',
+          data: {
+            labels: Object.keys(successRate),
+            datasets: [{
+              label: 'Success Rate (%)',
+              data: Object.values(successRate),
+              backgroundColor: '#27ae60',
+              borderColor: '#1e8449',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' },
+              tooltip: { mode: 'index', intersect: false }
+            },
+            scales: {
+              x: { title: { display: true, text: 'Agent' } },
+              y: {
+                title: { display: true, text: 'Success Rate (%)' },
+                beginAtZero: true,
+                max: 100
+              }
+            }
+          }
+        });
+
+        errorBox.style.display = "none"; // Hide error message
+      } catch (err) {
+        console.error("Dashboard load error:", err);
+        errorBox.style.display = "block";
+      }
+    }
+
+    // Load data initially and refresh every minute
+    loadData();
+    setInterval(loadData, 60000);
+  </script>
+</body>
+</html>

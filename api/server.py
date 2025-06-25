@@ -23,7 +23,7 @@ def create_app():
     def health():
         return jsonify({
             "status": "healthy",
-            "timestamp": "2024-01-01T00:00:00Z"
+            "timestamp": "2025-06-25T12:39:17Z"
         })
 
     @app.route("/api/v1/status")
@@ -38,9 +38,12 @@ def create_app():
             "status": "operational"
         })
 
+    @app.errorhandler(404)
+    def not_found(e):
+        return jsonify({"error": "Not found"}), 404
+
+    @app.errorhandler(500)
+    def server_error(e):
+        return jsonify({"error": "Internal server error"}), 500
+
     return app
-            "features": ["voice_commands", "task_management", "agent_coordination"],
-            "status": "operational"
-        })
-    
-    return app</new_str>

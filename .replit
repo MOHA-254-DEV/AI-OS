@@ -1,12 +1,12 @@
 modules = ["python-3.12", "nodejs-20", "web", "bash"]
-run = "node index.js"
+run = "python main.py"
 
 [nix]
 channel = "stable-24_05"
 packages = ["cargo", "ffmpeg-full", "libiconv", "libxcrypt", "openssl", "pkg-config", "portaudio", "rustc"]
 
 [deployment]
-run = ["sh", "-c", "node index.js"]
+run = ["sh", "-c", "python scripts/system_check.py && python main.py"]
 
 [workflows]
 runButton = "Run Application"

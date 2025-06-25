@@ -1,1 +1,19 @@
-
+{
+  "build": {
+    "env": {
+      "PYTHON_VERSION": "3.10.12"
+    }
+  },
+  "deploy": {
+    "start": "gunicorn api.server:create_app"
+  },
+  "envs": [
+    "OPENAI_API_KEY",
+    "API_TOKEN",
+    "SECRET_KEY",
+    "VOICE_ENABLED",
+    "DEBUG_MODE",
+    "ENV",
+    "PORT"
+  ]
+}

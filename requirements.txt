@@ -27,7 +27,6 @@ celery==5.3.4
 
 # Voice Recognition (missing)
 speechrecognition==3.10.0
-pyaudio==0.2.11
 
 # Configuration and Environment
 python-dotenv==1.0.0

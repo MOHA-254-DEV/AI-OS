@@ -1,5 +1,3 @@
-# core/main.py
-
 from core.tasks.task_queue import TaskQueue
 from core.tasks.task_dispatcher import TaskDispatcher
 from utils.logger import logger

@@ -1,1 +1,88 @@
+body {
+    background: linear-gradient(135deg, #12161b 0%, #222d42 100%) fixed !important;
+    color: #e6f0fa;
+    min-height: 100vh;
+}
 
+.navbar {
+    border-bottom: 1px solid #283544;
+}
+
+.list-group-item-action.active {
+    background: linear-gradient(90deg, #17b6ff 0, #475aff 100%) !important;
+    color: #fff !important;
+    font-weight: bold;
+    border: none;
+}
+
+.glass, .modal-content {
+    background: rgba(36,48,77,0.86) !important;
+    backdrop-filter: blur(8px);
+    border: 1.5px solid #3556a4a6;
+    border-radius: 1.2em !important;
+}
+
+.card-header {
+    border-bottom: 1px solid #253047;
+    font-size: 1.1em;
+    letter-spacing: 0.06em;
+}
+
+.content-section {
+    animation: fadein 0.8s;
+    min-height: 70vh;
+}
+
+@keyframes fadein {
+    from { opacity: 0; transform: translateY(12px);}
+    to { opacity: 1; transform: none;}
+}
+
+.card, .modal-content {
+    box-shadow: 0 4px 32px #008cff22, 0 2px 14px #22306633;
+}
+
+input.form-control, textarea.form-control {
+    background: rgba(27,33,56,0.90) !important;
+    color: #e6f0fa !important;
+    border: 1px solid #324169 !important;
+}
+
+input.form-control:focus {
+    border-color: #17b6ff !important;
+    box-shadow: 0 0 0 2px #17b6ff33 !important;
+}
+
+.btn-success, .btn-primary {
+    box-shadow: 0 2px 8px #17b6ff18;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+.btn-success:active, .btn-primary:active {
+    box-shadow: none;
+}
+
+#agents-list .card, #tasks-list .card {
+    transition: box-shadow 0.19s;
+}
+#agents-list .card:hover, #tasks-list .card:hover {
+    box-shadow: 0 6px 32px #00ffe633, 0 2px 20px #17b6ff44;
+}
+
+.spinner-border {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.alert {
+    border-radius: 0.9em;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    background: #212c3b;
+}
+::-webkit-scrollbar-thumb {
+    background: #17b6ff55;
+    border-radius: 5px;
+}

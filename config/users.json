@@ -1,50 +1,12 @@
-# users.py
-
-import os
-from dotenv import load_dotenv
-from datetime import datetime
-
-# Load environment variables
-load_dotenv()
-
-# --- Helper Functions ---
-
-def get_env_variable(key, default=None):
-    val = os.getenv(key, default)
-    if val is None:
-        raise ValueError(f"Missing env var: {key}")
-    return val
-
-def mask_token(token):
-    return f"{token[:4]}...{token[-4:]}" if token and len(token) >= 8 else "****"
-
-def parse_timestamp(ts):
-    try:
-        return datetime.utcfromtimestamp(float(ts)).strftime('%Y-%m-%d %H:%M:%S')
-    except Exception:
-        return "Invalid timestamp"
-
-# --- User Data Structure ---
-
-user_data = {
-    "alice": {
-        "token": get_env_variable("ALICE_TOKEN", "default-alice-token"),
-        "role": get_env_variable("ALICE_ROLE", "pro"),
-        "created_at": float(get_env_variable("ALICE_CREATED_AT", 1714930312.75))
-    },
-    "bob": {
-        "token": get_env_variable("BOB_TOKEN", "default-bob-token"),
-        "role": get_env_variable("BOB_ROLE", "free"),
-        "created_at": float(get_env_variable("BOB_CREATED_AT", 1714950000.00))
-    }
-    # Add more users here as needed
+{
+  "alice": {
+    "token": "default-alice-token",
+    "role": "pro",
+    "created_at": 1714930312.75
+  },
+  "bob": {
+    "token": "default-bob-token",
+    "role": "free",
+    "created_at": 1714950000.00
+  }
 }
-
-# --- Runtime View ---
-
-if __name__ == "__main__":
-    for username, info in user_data.items():
-        print(f"\n👤 {username.title()} Info:")
-        print(f"  🔑 Token (masked): {mask_token(info['token'])}")
-        print(f"  🛡️ Role: {info['role']}")
-        print(f"  📅 Created At: {parse_timestamp(info['created_at'])}")

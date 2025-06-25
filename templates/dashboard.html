@@ -1,18 +1,161 @@
-<!-- AGENTS -->
-<section id="agents" class="panel">
-    <h1>AI Agents</h1>
-    <form id="add-agent-form">
-        <input type="text" id="agent-name" placeholder="Agent name" required>
-        <button type="submit" class="glass">Add Agent</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Operating System Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/futuristic.css">
+    <link rel="icon" href="/static/favicon.ico">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold fs-3" href="#">🤖 AI OS</a>
+    <span class="navbar-text ms-auto text-info small">v1.0.0</span>
+  </div>
+</nav>
+<div class="container-fluid my-4">
+  <div class="row">
+    <!-- Sidebar -->
+    <aside class="col-12 col-md-3 col-lg-2 mb-4 mb-md-0">
+      <div class="list-group sticky-top shadow-sm rounded-3">
+        <a href="#dashboard" class="list-group-item list-group-item-action active" data-section="dashboard">Dashboard</a>
+        <a href="#agents" class="list-group-item list-group-item-action" data-section="agents">AI Agents</a>
+        <a href="#tasks" class="list-group-item list-group-item-action" data-section="tasks">Tasks</a>
+        <a href="#voice" class="list-group-item list-group-item-action" data-section="voice">Voice</a>
+        <a href="#settings" class="list-group-item list-group-item-action" data-section="settings">Settings</a>
+      </div>
+    </aside>
+    <!-- Main area -->
+    <main class="col-12 col-md-9 col-lg-10">
+      <!-- Dashboard -->
+      <section id="dashboard-section" class="content-section">
+        <div class="row g-4">
+          <div class="col-12 col-lg-4">
+            <div class="card glass shadow h-100">
+              <div class="card-header bg-transparent fw-semibold">System Status</div>
+              <div class="card-body text-center">
+                <div class="display-6 mb-2" id="status-value">...</div>
+                <div class="text-secondary" id="status-detail"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-4">
+            <div class="card glass shadow h-100">
+              <div class="card-header bg-transparent fw-semibold">Health</div>
+              <div class="card-body text-center">
+                <div class="display-6 mb-2" id="health-value">...</div>
+                <div class="text-secondary" id="health-timestamp"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-4">
+            <div class="card glass shadow h-100">
+              <div class="card-header bg-transparent fw-semibold">Features</div>
+              <div class="card-body">
+                <ul id="features-list" class="list-unstyled mb-0">
+                  <li>Loading...</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="alert alert-info mt-4 shadow-sm" role="alert">
+          Welcome to your futuristic AI Operating System. Use the sidebar to manage agents, tasks, and system features!
+        </div>
+      </section>
+      <!-- Agents -->
+      <section id="agents-section" class="content-section d-none">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="fw-bold mb-0">AI Agents</h2>
+          <button class="btn btn-success shadow" data-bs-toggle="modal" data-bs-target="#addAgentModal">+ Add Agent</button>
+        </div>
+        <div id="agents-feedback"></div>
+        <div id="agents-loading" class="text-center my-4 d-none">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+        <div id="agents-list" class="row gy-3"></div>
+      </section>
+      <!-- Tasks -->
+      <section id="tasks-section" class="content-section d-none">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="fw-bold mb-0">Tasks</h2>
+          <button class="btn btn-primary shadow" data-bs-toggle="modal" data-bs-target="#addTaskModal">+ Add Task</button>
+        </div>
+        <div id="tasks-feedback"></div>
+        <div id="tasks-loading" class="text-center my-4 d-none">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+        <div id="tasks-list" class="row gy-3"></div>
+      </section>
+      <!-- Voice -->
+      <section id="voice-section" class="content-section d-none">
+        <h2 class="fw-bold">Voice Commands</h2>
+        <div class="alert alert-secondary shadow-sm">
+          <span class="me-2">🎤</span>
+          <span>Voice command interface coming soon!</span>
+        </div>
+      </section>
+      <!-- Settings -->
+      <section id="settings-section" class="content-section d-none">
+        <h2 class="fw-bold">Settings</h2>
+        <div class="card glass shadow">
+          <div class="card-body">
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="darkModeSwitch" checked disabled>
+              <label class="form-check-label" for="darkModeSwitch">Dark Mode (default)</label>
+            </div>
+            <div class="alert alert-info mb-0">
+              More settings options will be available in future updates!
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<!-- Add Agent Modal -->
+<div class="modal fade" id="addAgentModal" tabindex="-1" aria-labelledby="addAgentModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" id="add-agent-form">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addAgentModalLabel">Add New Agent</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="agent-name" class="form-label">Agent Name</label>
+        <input type="text" class="form-control" id="agent-name" placeholder="Agent Name" required>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Add Agent</button>
+      </div>
     </form>
-    <ul class="agents-list" id="agents-list"></ul>
-</section>
-<!-- TASKS -->
-<section id="tasks" class="panel">
-    <h1>Tasks</h1>
-    <form id="add-task-form">
-        <input type="text" id="task-desc" placeholder="Task description" required>
-        <button type="submit" class="glass">Add Task</button>
+  </div>
+</div>
+<!-- Add Task Modal -->
+<div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" id="add-task-form">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addTaskModalLabel">Add New Task</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="task-desc" class="form-label">Task Description</label>
+        <input type="text" class="form-control" id="task-desc" placeholder="Task Description" required>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Add Task</button>
+      </div>
     </form>
-    <ul class="tasks-list" id="tasks-list"></ul>
-</section>
+  </div>
+</div>
+<!-- Bootstrap JS Bundle (with Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- App JS -->
+<script src="/static/dashboard.js"></script>
+</body>
+</html>

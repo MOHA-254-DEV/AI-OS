@@ -3,7 +3,7 @@ from core.task_scheduler import TaskScheduler
 from core.voice_handler import VoiceHandler
 from utils.logger import logger
 
-class Kernel:
+class AIKernel:
     def __init__(self):
         self.scheduler = TaskScheduler()
         self.voice = VoiceHandler()

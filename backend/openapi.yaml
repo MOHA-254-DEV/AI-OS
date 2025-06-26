@@ -1,1 +1,443 @@
-
+openapi: 3.0.3
+info:
+  title: AI-OS Backend API
+  version: "1.0"
+  description: API for the AI OS web UI (users, files, system, network, terminal)
+servers:
+  - url: http://localhost:8000
+paths:
+  /auth/login:
+    post:
+      summary: Login user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+  /auth/logout:
+    post:
+      summary: Logout user
+      responses:
+        "200":
+          description: Logout successful
+  /users:
+    get:
+      summary: List users
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+    post:
+      summary: Create user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreate"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /users/{user_id}:
+    put:
+      summary: Update user
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    delete:
+      summary: Delete user
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: User deleted
+  /system/stats:
+    get:
+      summary: Get system stats
+      responses:
+        "200":
+          description: System stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SystemStats"
+  /system/processes:
+    get:
+      summary: List running processes
+      responses:
+        "200":
+          description: List of processes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Process"
+  /system/update:
+    post:
+      summary: Run system update
+      responses:
+        "200":
+          description: Update result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+  /files:
+    get:
+      summary: List files in directory
+      parameters:
+        - in: query
+          name: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of files
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FileEntry"
+    post:
+      summary: Upload file or create folder
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                path:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: File/folder created
+  /files/{path}:
+    get:
+      summary: Download file
+      parameters:
+        - in: path
+          name: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: File content
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+    delete:
+      summary: Delete file or folder
+      parameters:
+        - in: path
+          name: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: File/folder deleted
+  /network/interfaces:
+    get:
+      summary: List network interfaces
+      responses:
+        "200":
+          description: List of interfaces
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NetworkInterface"
+  /network/connect:
+    post:
+      summary: Connect to network interface
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                interface:
+                  type: string
+      responses:
+        "200":
+          description: Connected
+  /network/disconnect:
+    post:
+      summary: Disconnect from network interface
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                interface:
+                  type: string
+      responses:
+        "200":
+          description: Disconnected
+  /network/firewall:
+    get:
+      summary: List firewall rules
+      responses:
+        "200":
+          description: List of firewall rules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FirewallRule"
+    post:
+      summary: Add firewall rule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FirewallRuleCreate"
+      responses:
+        "201":
+          description: Rule added
+  /network/firewall/{rule_id}:
+    delete:
+      summary: Delete firewall rule
+      parameters:
+        - in: path
+          name: rule_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Rule deleted
+  /terminal/run:
+    post:
+      summary: Run terminal command
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                command:
+                  type: string
+      responses:
+        "200":
+          description: Command output
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  output:
+                    type: string
+                  code:
+                    type: integer
+components:
+  schemas:
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        token:
+          type: string
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [admin, agent, user]
+        avatarUrl:
+          type: string
+        registered:
+          type: string
+        lastLogin:
+          type: string
+        status:
+          type: string
+          enum: [active, disabled]
+    UserCreate:
+      type: object
+      required: [name, email, role]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        password:
+          type: string
+    UserUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        status:
+          type: string
+        password:
+          type: string
+    FileEntry:
+      type: object
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+        type:
+          type: string
+          enum: [file, folder]
+        size:
+          type: integer
+        modified:
+          type: string
+        previewUrl:
+          type: string
+    SystemStats:
+      type: object
+      properties:
+        cpuUsage:
+          type: number
+        ramUsage:
+          type: number
+        diskUsage:
+          type: number
+        netUsage:
+          type: number
+        uptime:
+          type: number
+        loadAvg:
+          type: array
+          items:
+            type: number
+    Process:
+      type: object
+      properties:
+        pid:
+          type: integer
+        name:
+          type: string
+        user:
+          type: string
+        cpu:
+          type: number
+        mem:
+          type: number
+        started:
+          type: string
+        command:
+          type: string
+    NetworkInterface:
+      type: object
+      properties:
+        interface:
+          type: string
+        ip:
+          type: string
+        mac:
+          type: string
+        type:
+          type: string
+        ssid:
+          type: string
+        status:
+          type: string
+        signalStrength:
+          type: integer
+        speedMbps:
+          type: integer
+    FirewallRule:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        direction:
+          type: string
+          enum: [inbound, outbound]
+        protocol:
+          type: string
+        port:
+          type: string
+        action:
+          type: string
+          enum: [allow, deny]
+    FirewallRuleCreate:
+      type: object
+      required: [name, direction, protocol, port, action]
+      properties:
+        name:
+          type: string
+        direction:
+          type: string
+        protocol:
+          type: string
+        port:
+          type: string
+        action:
+          type: string

@@ -1,66 +1,49 @@
-from fastapi import APIRouter, Depends, File as UploadFile, UploadFile, Form, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File as FastAPIFile
 from sqlalchemy.orm import Session
 from typing import List
+from app.schemas.file import FileOut, FileCreate
+from app.crud.file import get_file, get_files_for_org, get_files_for_user, create_file, delete_file
+from app.api.deps import get_db, get_current_user
+import shutil
 import os
-
-from app.schemas.file import FileCreate, FileUpdate, FileOut
-from app.crud.file import (
-    create_file, get_file, get_files_by_path, get_files_by_owner, update_file, delete_file
-)
-from app.api.deps import get_db, get_current_active_user
-from app.core.utils import save_file, delete_file as delete_file_storage
 
 router = APIRouter()
 
 @router.get("/", response_model=List[FileOut])
-def list_my_files(
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user),
-    skip: int = 0,
-    limit: int = 100,
-):
-    return get_files_by_owner(db, current_user.id, skip=skip, limit=limit)
+def list_files(organization_id: int, db: Session = Depends(get_db)):
+    return get_files_for_org(db, organization_id=organization_id)
 
-@router.post("/upload", response_model=FileOut)
+@router.get("/{file_id}", response_model=FileOut)
+def retrieve_file(file_id: int, db: Session = Depends(get_db)):
+    file = get_file(db, file_id)
+    if not file:
+        raise HTTPException(status_code=404, detail="File not found")
+    return file
+
+@router.post("/", response_model=FileOut)
 def upload_file(
-    file: UploadFile = File(...),
-    path: str = Form(...),
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user),
+    organization_id: int,
+    owner_id: int,
+    upload: UploadFile = FastAPIFile(...),
+    db: Session = Depends(get_db)
 ):
-    filename = file.filename
-    storage_path = os.path.join(path, filename)
-    file_url = save_file(storage_path, file.file)
-    file_data = FileCreate(
-        name=filename,
-        path=path,
-        type="file",
-        size=file.spool_max_size,
-        preview_url=file_url
+    upload_dir = f"./app/static/files/org_{organization_id}"
+    os.makedirs(upload_dir, exist_ok=True)
+    file_path = os.path.join(upload_dir, upload.filename)
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(upload.file, buffer)
+    file_in = FileCreate(
+        filename=upload.filename,
+        size=os.path.getsize(file_path),
+        owner_id=owner_id,
+        organization_id=organization_id,
+        path=file_path,
     )
-    return create_file(db, file_data, current_user.id)
+    return create_file(db, file=file_in)
 
-@router.patch("/{file_id}", response_model=FileOut)
-def update_file_info(
-    file_id: str,
-    file_update: FileUpdate,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user),
-):
+@router.delete("/{file_id}")
+def delete_file_api(file_id: int, db: Session = Depends(get_db)):
     db_file = get_file(db, file_id)
-    if not db_file or db_file.owner_id != current_user.id:
+    if not db_file:
         raise HTTPException(status_code=404, detail="File not found")
-    return update_file(db, db_file, file_update)
-
-@router.delete("/{file_id}", response_model=dict)
-def delete_file_by_id(
-    file_id: str,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user),
-):
-    db_file = get_file(db, file_id)
-    if not db_file or db_file.owner_id != current_user.id:
-        raise HTTPException(status_code=404, detail="File not found")
-    delete_file_storage(db_file.path)
-    delete_file(db, db_file)
-    return {"msg": "File deleted"}
+    return delete_file(db, db_file)

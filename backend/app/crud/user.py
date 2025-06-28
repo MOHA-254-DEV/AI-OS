@@ -1,20 +1,44 @@
-from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, Enum
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
-import uuid
-from datetime import datetime
-from app.db.session import Base
+from sqlalchemy.orm import Session
+from app.db.models.user import User
+from app.schemas.user import UserCreate, UserUpdate
+from app.core.security import hash_password
 
-class File(Base):
-    __tablename__ = "files"
+def get_user(db: Session, user_id: int):
+    return db.query(User).filter(User.id == user_id).first()
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-    name = Column(String, nullable=False)
-    path = Column(String, nullable=False, index=True)
-    type = Column(Enum("file", "folder", name="filetype"), nullable=False, default="file")
-    size = Column(Integer, default=0)
-    modified = Column(DateTime, default=datetime.utcnow)
-    preview_url = Column(String, nullable=True)
+def get_user_by_username(db: Session, username: str):
+    return db.query(User).filter(User.username == username).first()
 
-    owner_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
-    owner = relationship("User", back_populates="files")
+def get_user_by_email(db: Session, email: str):
+    return db.query(User).filter(User.email == email).first()
+
+def get_users(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(User).offset(skip).limit(limit).all()
+
+def create_user(db: Session, user: UserCreate, org_id: int = None):
+    db_user = User(
+        username=user.username,
+        email=user.email,
+        full_name=user.full_name,
+        role=user.role,
+        hashed_password=hash_password(user.password),
+        is_active=True,
+        is_superuser=user.is_superuser,
+        organization_id=org_id
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+def update_user(db: Session, db_user: User, user_update: UserUpdate):
+    for field, value in user_update.dict(exclude_unset=True).items():
+        setattr(db_user, field, value)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+def delete_user(db: Session, db_user: User):
+    db.delete(db_user)
+    db.commit()
+    return db_user

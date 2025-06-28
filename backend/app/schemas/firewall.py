@@ -1,26 +1,22 @@
-from pydantic import BaseModel
 from typing import Optional
-import uuid
+from pydantic import BaseModel
+from datetime import datetime
 
-class FirewallRuleBase(BaseModel):
-    name: str
-    direction: str
-    protocol: str
-    port: str
+class FirewallBase(BaseModel):
+    rule_name: str
     action: str
+    source: Optional[str] = None
+    destination: Optional[str] = None
+    protocol: Optional[str] = None
+    is_active: Optional[bool] = True
 
-class FirewallRuleCreate(FirewallRuleBase):
-    pass
+class FirewallCreate(FirewallBase):
+    organization_id: int
 
-class FirewallRuleUpdate(BaseModel):
-    name: Optional[str]
-    direction: Optional[str]
-    protocol: Optional[str]
-    port: Optional[str]
-    action: Optional[str]
-
-class FirewallRuleOut(FirewallRuleBase):
-    id: uuid.UUID
+class FirewallOut(FirewallBase):
+    id: int
+    organization_id: int
+    created_at: datetime
 
     class Config:
         orm_mode = True

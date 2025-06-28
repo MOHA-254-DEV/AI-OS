@@ -1,26 +1,36 @@
 from sqlalchemy.orm import Session
-from app.db.models.network import Network
-from app.schemas.network import NetworkCreate
+from app.db.models.firewall import Firewall
+from app.schemas.firewall import FirewallCreate
 
-def get_network(db: Session, network_id: int):
-    return db.query(Network).filter(Network.id == network_id).first()
+def get_firewall(db: Session, fw_id: int):
+    return db.query(Firewall).filter(Firewall.id == fw_id).first()
 
-def get_networks_for_org(db: Session, organization_id: int, skip: int = 0, limit: int = 100):
-    return db.query(Network).filter(Network.organization_id == organization_id).offset(skip).limit(limit).all()
+def get_firewalls_for_org(db: Session, organization_id: int, skip: int = 0, limit: int = 100):
+    return db.query(Firewall).filter(Firewall.organization_id == organization_id).offset(skip).limit(limit).all()
 
-def create_network(db: Session, network: NetworkCreate):
-    db_network = Network(
-        name=network.name,
-        cidr=network.cidr,
-        description=network.description,
-        organization_id=network.organization_id,
+def create_firewall(db: Session, fw: FirewallCreate):
+    db_fw = Firewall(
+        rule_name=fw.rule_name,
+        action=fw.action,
+        source=fw.source,
+        destination=fw.destination,
+        protocol=fw.protocol,
+        is_active=fw.is_active,
+        organization_id=fw.organization_id,
     )
-    db.add(db_network)
+    db.add(db_fw)
     db.commit()
-    db.refresh(db_network)
-    return db_network
+    db.refresh(db_fw)
+    return db_fw
 
-def delete_network(db: Session, db_network: Network):
-    db.delete(db_network)
+def update_firewall(db: Session, db_fw: Firewall, update_data: dict):
+    for field, value in update_data.items():
+        setattr(db_fw, field, value)
     db.commit()
-    return db_network
+    db.refresh(db_fw)
+    return db_fw
+
+def delete_firewall(db: Session, db_fw: Firewall):
+    db.delete(db_fw)
+    db.commit()
+    return db_fw

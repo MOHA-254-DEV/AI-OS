@@ -1,9 +1,2 @@
-from app.db.models.user import User
-from app.db.models.organization import Organization
-from app.db.models.notification import Notification
-from app.db.models.file import File
-from app.db.models.network import Network
-from app.db.models.firewall import Firewall
-from app.db.models.quota import Quota
-from app.db.models.audit_log import AuditLog
-from app.db.models.legal_hold import LegalHold
+from sqlalchemy.ext.declarative import declarative_base
+Base = declarative_base()

@@ -1,14 +1,18 @@
-from sqlalchemy import Column, String, Enum
-from sqlalchemy.dialects.postgresql import UUID
-import uuid
-from app.db.session import Base
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
+from sqlalchemy.orm import relationship
+from datetime import datetime
+from app.db.base import Base
 
-class FirewallRule(Base):
-    __tablename__ = "firewall_rules"
+class Firewall(Base):
+    __tablename__ = "firewalls"
+    id = Column(Integer, primary_key=True, index=True)
+    organization_id = Column(Integer, ForeignKey("organizations.id"))
+    rule_name = Column(String, nullable=False)
+    action = Column(String, nullable=False)
+    source = Column(String, nullable=True)
+    destination = Column(String, nullable=True)
+    protocol = Column(String, nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-    name = Column(String, nullable=False)
-    direction = Column(Enum("inbound", "outbound", name="direction"), nullable=False)
-    protocol = Column(String, nullable=False)
-    port = Column(String, nullable=False)
-    action = Column(Enum("allow", "deny", name="action"), nullable=False)
+    organization = relationship("Organization")

@@ -1,31 +1,19 @@
-from pydantic import BaseModel
 from typing import Optional
-import uuid
+from pydantic import BaseModel
 from datetime import datetime
 
-class NetworkInterfaceBase(BaseModel):
-    interface: str
-    ip: Optional[str] = None
-    mac: Optional[str] = None
-    type: str
-    ssid: Optional[str] = None
-    status: str
-    signal_strength: Optional[int] = None
-    speed_mbps: Optional[int] = None
+class NetworkBase(BaseModel):
+    name: str
+    cidr: str
+    description: Optional[str] = None
 
-class NetworkInterfaceCreate(NetworkInterfaceBase):
-    pass
+class NetworkCreate(NetworkBase):
+    organization_id: int
 
-class NetworkInterfaceUpdate(BaseModel):
-    ip: Optional[str]
-    mac: Optional[str]
-    status: Optional[str]
-    signal_strength: Optional[int]
-    speed_mbps: Optional[int]
-
-class NetworkInterfaceOut(NetworkInterfaceBase):
-    id: uuid.UUID
-    created: datetime
+class NetworkOut(NetworkBase):
+    id: int
+    organization_id: int
+    created_at: datetime
 
     class Config:
         orm_mode = True

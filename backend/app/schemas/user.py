@@ -1,20 +1,29 @@
-from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, Enum
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
-import uuid
+from typing import Optional
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
-from app.db.session import Base
 
-class File(Base):
-    __tablename__ = "files"
+class UserBase(BaseModel):
+    username: str
+    email: EmailStr
+    full_name: Optional[str] = None
+    role: Optional[str] = "member"
+    is_active: Optional[bool] = True
+    is_superuser: Optional[bool] = False
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-    name = Column(String, nullable=False)
-    path = Column(String, nullable=False, index=True)
-    type = Column(Enum("file", "folder", name="filetype"), nullable=False, default="file")
-    size = Column(Integer, default=0)
-    modified = Column(DateTime, default=datetime.utcnow)
-    preview_url = Column(String, nullable=True)
+class UserCreate(UserBase):
+    password: str
 
-    owner_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
-    owner = relationship("User", back_populates="files")
+class UserUpdate(BaseModel):
+    full_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    role: Optional[str] = None
+    is_active: Optional[bool] = None
+
+class UserOut(UserBase):
+    id: int
+    organization_id: Optional[int] = None
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        orm_mode = True

@@ -1,32 +1,18 @@
-import axios from "axios";
-import { API_BASE } from "../utils/config";
-import { User, AuthToken } from "../types/user";
+import api from "../utils/apiClient";
+import { User } from "../types/user";
 
-// User login
-export async function loginAPI(username: string, password: string): Promise<User> {
-  const res = await axios.post(`${API_BASE}/auth/login`, { username, password });
-  if (res.data && res.data.token) {
-    localStorage.setItem("token", res.data.token);
-  }
-  return res.data.user;
+export async function login(username: string, password: string): Promise<{ access_token: string }> {
+  const res = await api.post("/auth/login", { username, password });
+  return res.data;
 }
 
-// User logout
-export async function logoutAPI(): Promise<void> {
-  localStorage.removeItem("token");
-  await axios.post(`${API_BASE}/auth/logout`);
+export async function register(username: string, password: string, email: string): Promise<void> {
+  await api.post("/auth/register", { username, password, email });
 }
 
-// Get current user from backend (requires token)
-export async function getCurrentUserAPI(): Promise<User | null> {
-  const token = localStorage.getItem("token");
-  if (!token) return null;
-  try {
-    const res = await axios.get(`${API_BASE}/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return res.data.user;
-  } catch {
-    return null;
-  }
+export async function me(token: string): Promise<User> {
+  const res = await api.get("/users/me", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data;
 }

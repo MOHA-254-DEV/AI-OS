@@ -1,49 +1,54 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { User } from "../types/user";
-import { loginAPI, logoutAPI, getCurrentUserAPI } from "../api/auth";
+import * as authApi from "../api/auth";
 
-interface AuthContextProps {
+interface AuthContextType {
   user: User | null;
+  token: string | null;
   login: (username: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-  loading: boolean;
+  logout: () => void;
+  register: (username: string, password: string, email: string) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextProps | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState<string | null>(localStorage.getItem("aios_token"));
 
   useEffect(() => {
-    getCurrentUserAPI()
-      .then(setUser)
-      .finally(() => setLoading(false));
-  }, []);
+    if (token) {
+      authApi.me(token).then(setUser).catch(() => logout());
+    }
+  }, [token]);
 
   const login = async (username: string, password: string) => {
-    setLoading(true);
-    const userData = await loginAPI(username, password);
-    setUser(userData);
-    setLoading(false);
+    const { access_token } = await authApi.login(username, password);
+    setToken(access_token);
+    localStorage.setItem("aios_token", access_token);
+    const me = await authApi.me(access_token);
+    setUser(me);
   };
 
-  const logout = async () => {
-    setLoading(true);
-    await logoutAPI();
+  const register = async (username: string, password: string, email: string) => {
+    await authApi.register(username, password, email);
+  };
+
+  const logout = () => {
     setUser(null);
-    setLoading(false);
+    setToken(null);
+    localStorage.removeItem("aios_token");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, token, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export function useAuth() {
+export const useAuth = () => {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
   return ctx;
-}
+};

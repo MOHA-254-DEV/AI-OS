@@ -1,63 +1,76 @@
-import React, { useState, useMemo } from "react";
-import { ThemeProvider, CssBaseline, Box } from "@mui/material";
-import theme from "./theme";
-import AppBar from "./components/AppBar";
-import Sidebar from "./components/Sidebar";
-import TabPanel from "./components/TabPanel";
-import "./styles/global.css";
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import { NotificationProvider } from "./context/NotificationContext";
+import { OrganizationProvider } from "./context/OrganizationContext";
+import LoginForm from "./components/Auth/LoginForm";
+import RegisterForm from "./components/Auth/RegisterForm";
+import ForgotPassword from "./components/Auth/ForgotPassword";
+import ResetPassword from "./components/Auth/ResetPassword";
+import Dashboard from "./components/Dashboard/Overview";
+import Notifications from "./components/Dashboard/Notifications";
+import Organizations from "./components/Dashboard/Organizations";
+import Files from "./components/Dashboard/Files";
+import Network from "./components/Dashboard/Network";
+import Firewall from "./components/Dashboard/Firewall";
+import Quota from "./components/Dashboard/Quota";
+import Users from "./components/Dashboard/Users";
+import Header from "./components/Layout/Header";
+import Sidebar from "./components/Layout/Sidebar";
+import ProtectedRoute from "./components/Common/ProtectedRoute";
 
-const tabNames = [
-  "System",
-  "Files",
-  "Settings",
-  "Search",
-  "Users",
-  "Network",
-  "Terminal",
-];
-
-function App() {
-  const [selectedTab, setSelectedTab] = useState(0);
-  const [darkMode, setDarkMode] = useState(false);
-
-  const muiTheme = useMemo(() => theme(darkMode), [darkMode]);
-
-  return (
-    <ThemeProvider theme={muiTheme}>
-      <CssBaseline />
-      <AppBar
-        selectedTab={selectedTab}
-        setSelectedTab={setSelectedTab}
-        darkMode={darkMode}
-        setDarkMode={setDarkMode}
-        tabNames={tabNames}
-      />
-      <Box sx={{ display: "flex", minHeight: "100vh" }}>
-        <Sidebar
-          selectedTab={selectedTab}
-          setSelectedTab={setSelectedTab}
-          tabNames={tabNames}
-        />
-        <Box
-          component="main"
-          sx={{
-            flexGrow: 1,
-            p: 3,
-            background:
-              "linear-gradient(120deg, #e3f2fd 0%, #ffffff 80%, #fce4ec 100%)",
-            minHeight: "100vh",
-            overflow: "auto",
-          }}
-        >
-          <TabPanel
-            selectedTab={selectedTab}
-            darkMode={darkMode}
-            setDarkMode={setDarkMode}
-          />
-        </Box>
-      </Box>
-    </ThemeProvider>
-  );
-}
+const App = () => (
+  <AuthProvider>
+    <NotificationProvider>
+      <OrganizationProvider>
+        <BrowserRouter>
+          <Header />
+          <Sidebar />
+          <main style={{ padding: "1rem", marginLeft: 250 }}>
+            <Routes>
+              <Route path="/login" element={<LoginForm />} />
+              <Route path="/register" element={<RegisterForm />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
+              <Route
+                path="/"
+                element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
+              />
+              <Route
+                path="/notifications"
+                element={<ProtectedRoute><Notifications /></ProtectedRoute>}
+              />
+              <Route
+                path="/organizations"
+                element={<ProtectedRoute><Organizations /></ProtectedRoute>}
+              />
+              <Route
+                path="/files"
+                element={<ProtectedRoute><Files /></ProtectedRoute>}
+              />
+              <Route
+                path="/network"
+                element={<ProtectedRoute><Network /></ProtectedRoute>}
+              />
+              <Route
+                path="/firewall"
+                element={<ProtectedRoute><Firewall /></ProtectedRoute>}
+              />
+              <Route
+                path="/quota"
+                element={<ProtectedRoute><Quota /></ProtectedRoute>}
+              />
+              <Route
+                path="/users"
+                element={<ProtectedRoute><Users /></ProtectedRoute>}
+              />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
+        </BrowserRouter>
+      </OrganizationProvider>
+    </NotificationProvider>
+  </AuthProvider>
+);
 
 export default App;
